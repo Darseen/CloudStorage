@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { FormEvent, useState } from "react";
+import { redirect } from "next/navigation";
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -20,11 +21,16 @@ export default function Page() {
     };
 
     try {
-      await signIn("credentials", {
-        ...credentials,
-        redirect: true,
-        callbackUrl: "/",
+      const res = await fetch("/api/user/register", {
+        method: "POST",
+        // headers: {
+        //   "Content-Type": "application/json",
+        // },
+        body: JSON.stringify(credentials),
       });
+
+      const data = await res.json();
+      console.log(data);
     } catch (err) {
     } finally {
       setIsLoading(false);
@@ -35,7 +41,10 @@ export default function Page() {
     setIsLoadingGoogle(true);
 
     try {
-      await signIn("google");
+      const res = await signIn("google", { redirect: false });
+      if (res && !res.error) {
+        redirect("/");
+      }
     } catch (err) {
     } finally {
       setIsLoadingGoogle(false);
@@ -44,11 +53,23 @@ export default function Page() {
 
   return (
     <div className="grid place-content-center h-screen">
-      <div className="h-96 w-96 bg-base-100 outline outline-secondary rounded-lg flex flex-col justify-center items-center">
+      <div className="h-auto sm:w-96 w-[350px] bg-base-100 outline outline-secondary rounded-lg flex flex-col justify-center items-center">
         <form
-          className="form-control w-full max-w-xs mt-6"
+          className="form-control w-full max-w-xs p-2"
           onSubmit={handleSignIn}
         >
+          <div>
+            <label className="label">
+              <span className="label-text font-semibold">Username</span>
+            </label>
+            <input
+              type="text"
+              placeholder="Username"
+              name="username"
+              className="input input-bordered w-full max-w-xs input-secondary"
+              required
+            />
+          </div>
           <div>
             <label className="label">
               <span className="label-text font-semibold">Email</span>
@@ -62,7 +83,7 @@ export default function Page() {
             />
           </div>
 
-          <div className="my-5">
+          <div>
             <label className="label">
               <span className="label-text font-semibold">Password</span>
             </label>
@@ -75,10 +96,10 @@ export default function Page() {
             />
           </div>
           <button
-            className="btn btn-secondary mt-3 text-lg hover:bg-opacity-85"
+            className="btn btn-secondary text-lg hover:bg-opacity-85 mt-6"
             disabled={isLoading}
           >
-            Sign In{" "}
+            Sign Up{" "}
             {isLoading && (
               <span className="loading loading-spinner loading-sm" />
             )}

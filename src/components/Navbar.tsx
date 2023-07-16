@@ -1,5 +1,3 @@
-import { signOut } from "next-auth/react";
-import Image from "next/image";
 import Link from "next/link";
 import UserMenu from "./UserMenu";
 
@@ -10,7 +8,7 @@ export default function Navbar() {
         <div className="dropdown">
           <label
             tabIndex={0}
-            className="btn btn-ghost btn-circle hover:bg-primary hover:text-black"
+            className="btn btn-ghost btn-circle text-primary hover:bg-primary hover:text-black"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -58,7 +56,16 @@ export default function Navbar() {
         </Link>
       </div>
       <div className="navbar-end">
-        <UserMenu />
+        <UserMenu
+          user={{
+            authProvider: "",
+            email: "",
+            image: "",
+            name: "",
+            password: "",
+            googleId: "",
+          }}
+        />
       </div>
     </div>
   );

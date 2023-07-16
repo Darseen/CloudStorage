@@ -5,9 +5,13 @@ import NextAuth from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/db";
+import { Account } from "@prisma/client";
 
 const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as Adapter,
+  session: {
+    strategy: "jwt",
+  },
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENTID as string,
@@ -20,7 +24,16 @@ const authOptions: NextAuthOptions = {
         // password: { label: "password", type: "password" },
       },
       async authorize(credentials) {
-        const user = { id: "1", name: "J Smith", email: "jsmith@example.com" };
+        const res = await fetch("http://localhost:3000/api/user/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(credentials),
+        });
+        const data = await res.json();
+        const user = data?.user;
+        console.log(user);
 
         if (user) {
           return user;
@@ -35,7 +48,6 @@ const authOptions: NextAuthOptions = {
     async signIn({ user, account, profile, email, credentials }) {
       if (account?.provider === "google") {
         const googleAuthData: User = {
-          id: user.id,
           name: user.name!,
           email: user.email!,
           image: user.image!,
@@ -46,11 +58,21 @@ const authOptions: NextAuthOptions = {
         const exist = await prisma.user.findFirst({
           where: { email: user.email! },
         });
-        if (exist) return true;
+        if (exist) {
+          await prisma.user.update({
+            where: { email: user.email! },
+            data: { image: user.image },
+          });
+        } else {
+          await prisma.user.create({
+            data: googleAuthData,
+          });
 
-        await prisma.user.create({
-          data: googleAuthData,
-        });
+          const res = await prisma.account.create({
+            data: account as Account,
+          });
+          console.log(res);
+        }
       }
       return true;
     },

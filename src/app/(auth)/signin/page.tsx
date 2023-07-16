@@ -3,10 +3,12 @@
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isLoadingGoogle, setIsLoadingGoogle] = useState<boolean>(false);
+  const router = useRouter();
 
   const handleSignIn = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -17,13 +19,16 @@ export default function Page() {
       email: formData.get("email"),
       password: formData.get("password"),
     };
-    console.log(credentials);
+
     try {
-      await signIn("credentials", {
+      const res = await signIn("credentials", {
         ...credentials,
-        redirect: true,
-        callbackUrl: "/",
+        redirect: false,
       });
+      console.log(res);
+      if (res && !res.error) {
+        router.push("/");
+      }
     } catch (err) {
     } finally {
       setIsLoading(false);
@@ -34,7 +39,11 @@ export default function Page() {
     setIsLoadingGoogle(true);
 
     try {
-      await signIn("google");
+      const res = await signIn("google", { redirect: false });
+
+      if (res && !res.error) {
+        router.push("/");
+      }
     } catch (err) {
     } finally {
       setIsLoadingGoogle(false);
@@ -43,7 +52,7 @@ export default function Page() {
 
   return (
     <div className="grid place-content-center h-screen">
-      <div className="h-96 w-96 bg-base-100 outline outline-secondary rounded-lg flex flex-col justify-center items-center">
+      <div className="h-96 sm:w-96 w-[350px] bg-base-100 outline outline-secondary rounded-lg flex flex-col justify-center items-center">
         <form
           className="form-control w-full max-w-xs mt-6"
           onSubmit={handleSignIn}
