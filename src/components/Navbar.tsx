@@ -7,7 +7,7 @@ export default async function Navbar() {
   const session = await getServerSession(authOptions);
 
   return (
-    <div className="navbar bg-base-100 fixed">
+    <div className="navbar bg-transparent fixed">
       <div className="navbar-start">
         <div className="dropdown">
           <label

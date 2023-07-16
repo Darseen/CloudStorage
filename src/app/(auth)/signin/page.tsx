@@ -47,7 +47,7 @@ export default function Page() {
   };
 
   return (
-    <div className="grid place-content-center h-screen">
+    <div className="grid place-content-center h-screen background-gradient">
       <div className="h-auto sm:w-96 w-[350px] bg-base-100 outline outline-secondary rounded-lg flex flex-col justify-center items-center">
         <form
           className="form-control w-full max-w-xs mt-6 p-2"
