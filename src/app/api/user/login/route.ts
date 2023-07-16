@@ -12,14 +12,11 @@ export async function POST(req: Request) {
   const { email, password } = userData;
 
   if (!email || !password) {
-    return NextResponse.json(
-      { message: "Missing Credentials" },
-      { status: 400 }
-    );
+    return NextResponse.json({ err: "Missing Credentials" }, { status: 403 });
   }
 
   try {
-    const user = await prisma.user.findFirst({
+    const user = await prisma.credentialsUser.findFirst({
       where: { email },
     });
     if (!user || !user.password) {
@@ -32,17 +29,17 @@ export async function POST(req: Request) {
     const passCheck = await bcrypt.compare(password, user.password!);
 
     if (passCheck) {
-      user.password = null;
+      user.password = "";
       return NextResponse.json(
         {
-          message: "User Signed in Successfully",
+          success: "User Signed in Successfully",
           user,
         },
         { status: 200 }
       );
     }
   } catch (err) {
-    return NextResponse.json({ err }, { status: 500 });
+    return NextResponse.json({ err: "Something went wrong!" }, { status: 500 });
   }
-  return NextResponse.json({ message: "Invalid Credentials" }, { status: 401 });
+  return NextResponse.json({ err: "Invalid Credentials" }, { status: 401 });
 }

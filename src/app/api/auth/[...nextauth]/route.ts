@@ -5,9 +5,8 @@ import NextAuth from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/db";
-import { Account } from "@prisma/client";
 
-const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as Adapter,
   session: {
     strategy: "jwt",
@@ -33,7 +32,6 @@ const authOptions: NextAuthOptions = {
         });
         const data = await res.json();
         const user = data?.user;
-        console.log(user);
 
         if (user) {
           return user;
@@ -44,37 +42,19 @@ const authOptions: NextAuthOptions = {
     }),
   ],
 
-  callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
+  events: {
+    async signIn({ user, account }) {
       if (account?.provider === "google") {
-        const googleAuthData: User = {
-          name: user.name!,
-          email: user.email!,
-          image: user.image!,
-          authProvider: "google",
-          googleId: user.id,
-        };
-
-        const exist = await prisma.user.findFirst({
+        const exist = await prisma.credentialsUser.findFirst({
           where: { email: user.email! },
         });
         if (exist) {
-          await prisma.user.update({
+          await prisma.credentialsUser.update({
             where: { email: user.email! },
             data: { image: user.image },
           });
-        } else {
-          await prisma.user.create({
-            data: googleAuthData,
-          });
-
-          const res = await prisma.account.create({
-            data: account as Account,
-          });
-          console.log(res);
         }
       }
-      return true;
     },
   },
 

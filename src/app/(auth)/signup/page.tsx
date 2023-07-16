@@ -3,11 +3,13 @@
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { FormEvent, useState } from "react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isLoadingGoogle, setIsLoadingGoogle] = useState<boolean>(false);
+  const router = useRouter();
 
   const handleSignIn = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -23,14 +25,18 @@ export default function Page() {
     try {
       const res = await fetch("/api/user/register", {
         method: "POST",
-        // headers: {
-        //   "Content-Type": "application/json",
-        // },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(credentials),
       });
 
       const data = await res.json();
+
       console.log(data);
+      if (data && !data.err) {
+        router.push("/");
+      }
     } catch (err) {
     } finally {
       setIsLoading(false);
@@ -41,10 +47,7 @@ export default function Page() {
     setIsLoadingGoogle(true);
 
     try {
-      const res = await signIn("google", { redirect: false });
-      if (res && !res.error) {
-        redirect("/");
-      }
+      await signIn("google", { redirect: true, callbackUrl: "/" });
     } catch (err) {
     } finally {
       setIsLoadingGoogle(false);
@@ -104,6 +107,12 @@ export default function Page() {
               <span className="loading loading-spinner loading-sm" />
             )}
           </button>
+          <span className="text-zinc-200 text-sm mt-2">
+            {"Already have an account? "}{" "}
+            <Link href="/signin" className="underline text-secondary">
+              Sign in
+            </Link>
+          </span>
         </form>
         <button
           className="btn btn-outline btn-secondary my-3 w-full max-w-xs"

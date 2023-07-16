@@ -13,26 +13,32 @@ export async function POST(req: Request) {
   const { username, email, password } = userData;
 
   if (!username || !email || !password) {
-    return NextResponse.json(
-      { message: "Missing Credentials" },
-      { status: 400 }
-    );
+    return NextResponse.json({ err: "Missing Credentials" }, { status: 403 });
   }
 
   try {
+    const userExist = await prisma.credentialsUser.findFirst({
+      where: { email },
+    });
+    if (userExist) {
+      return NextResponse.json(
+        { err: "Email is already in use" },
+        { status: 409 }
+      );
+    }
+
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    await prisma.user.create({
+    await prisma.credentialsUser.create({
       data: {
         name: username,
         email,
-        authProvider: "credentials",
         password: hashedPassword,
       },
     });
   } catch (err) {
-    return NextResponse.json({ err }, { status: 500 });
+    return NextResponse.json({ err: "Something went wrong!" }, { status: 500 });
   }
 
-  return NextResponse.json({ message: "User Registered Successfully" });
+  return NextResponse.json({ success: "User Registered Successfully" });
 }

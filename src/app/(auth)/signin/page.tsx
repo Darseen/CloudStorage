@@ -4,6 +4,7 @@ import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -37,13 +38,8 @@ export default function Page() {
 
   const googleSignIn = async () => {
     setIsLoadingGoogle(true);
-
     try {
-      const res = await signIn("google", { redirect: false });
-
-      if (res && !res.error) {
-        router.push("/");
-      }
+      await signIn("google", { redirect: true, callbackUrl: "/" });
     } catch (err) {
     } finally {
       setIsLoadingGoogle(false);
@@ -52,9 +48,9 @@ export default function Page() {
 
   return (
     <div className="grid place-content-center h-screen">
-      <div className="h-96 sm:w-96 w-[350px] bg-base-100 outline outline-secondary rounded-lg flex flex-col justify-center items-center">
+      <div className="h-auto sm:w-96 w-[350px] bg-base-100 outline outline-secondary rounded-lg flex flex-col justify-center items-center">
         <form
-          className="form-control w-full max-w-xs mt-6"
+          className="form-control w-full max-w-xs mt-6 p-2"
           onSubmit={handleSignIn}
         >
           <div>
@@ -91,6 +87,12 @@ export default function Page() {
               <span className="loading loading-spinner loading-sm" />
             )}
           </button>
+          <span className="text-zinc-200 text-sm mt-2">
+            {"Don't have an account? "}{" "}
+            <Link href="/signup" className="underline text-secondary">
+              Sign up
+            </Link>
+          </span>
         </form>
         <button
           className="btn btn-outline btn-secondary my-3 w-full max-w-xs"

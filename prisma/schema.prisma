@@ -7,20 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
-  name         String
-  email        String    @unique
-  password     String?
-  image        String?
-  googleId     String?
-  authProvider String
-  createdAt    DateTime  @default(now())
-  Account      Account[]
-
-  @@map("users")
-}
-
 model Account {
   id                String  @id @default(auto()) @map("_id") @db.ObjectId
   userId            String  @db.ObjectId
@@ -41,22 +27,33 @@ model Account {
   @@map("accounts")
 }
 
-// model VerificationToken {
-//   id         String   @id @default(auto()) @map("_id") @db.ObjectId
-//   identifier String
-//   token      String   @unique
-//   expires    DateTime
+model CredentialsUser {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  email    String  @unique
+  password String
+  image    String?
 
-//   @@unique([identifier, token])
-//   @@map("verificationtokens")
-// }
+  @@map("credentials_user")
+}
 
-// model Session {
-//   id           String   @id @default(auto()) @map("_id") @db.ObjectId
-//   sessionToken String   @unique
-//   userId       String   @db.ObjectId
-//   expires      DateTime
-//   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+model User {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
 
-//   @@map("sessions")
-// }
+  @@map("google_users")
+}
+
+model VerificationToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
