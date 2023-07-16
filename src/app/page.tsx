@@ -1,22 +1,22 @@
-import Link from "next/link";
+import { User, getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { authOptions } from "./api/auth/[...nextauth]/route";
+import ModalButton from "@/components/ModalButton";
 
-export default function Page() {
+export default async function Page() {
+  const session = await getServerSession(authOptions);
   return (
     <div className="flex max-w-6xl mx-auto flex-col items-center justify-center py-2 min-h-screen">
       <main className="flex flex-1 w-full flex-col items-center justify-center text-center px-4 sm:mt-20 mt-20 background-gradient">
-        <h1 className="mx-auto max-w-4xl font-display text-5xl font-bold tracking-normal text-gray-300 sm:text-7xl">
+        <h1 className="mx-auto max-w-4xl text-5xl font-bold tracking-normal text-gray-300 sm:text-7xl">
           <span className="whitespace-nowrap text-primary">CloudStorage</span>{" "}
           App For Free Online File Storing.
         </h1>
         <h2 className="mx-auto mt-12 max-w-xl text-lg sm:text-gray-400  text-gray-500 leading-7">
-          This app was built using Next.js, Mongodb, Prisma and TailwindCss
+          This app was built using Next.js, Mongodb, Prisma and TailwindCSS
         </h2>
-        <Link
-          className="bg-primary rounded-xl text-white font-bold px-4 py-3 sm:mt-10 mt-8 hover:bg-black transition"
-          href="/files"
-        >
-          Files Dashboard
-        </Link>
+
+        <ModalButton user={session?.user as unknown as User} />
 
         <a
           href="https://github.com/darseen/CloudStorage"
