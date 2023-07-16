@@ -80,7 +80,7 @@ export default function Page() {
           </div>
           <button
             className="btn btn-secondary mt-3 text-lg hover:bg-opacity-85"
-            disabled={isLoading}
+            disabled={isLoading || isLoadingGoogle}
           >
             Sign In{" "}
             {isLoading && (
@@ -97,7 +97,7 @@ export default function Page() {
         <button
           className="btn btn-outline btn-secondary my-3 w-full max-w-xs"
           onClick={googleSignIn}
-          disabled={isLoadingGoogle}
+          disabled={isLoadingGoogle || isLoading}
         >
           <Image
             className="w-6 h-6"

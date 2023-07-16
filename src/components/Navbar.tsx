@@ -1,7 +1,11 @@
 import Link from "next/link";
 import UserMenu from "./UserMenu";
+import { User, getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-export default function Navbar() {
+export default async function Navbar() {
+  const session = await getServerSession(authOptions);
+
   return (
     <div className="navbar bg-base-100 fixed">
       <div className="navbar-start">
@@ -27,12 +31,12 @@ export default function Navbar() {
           </label>
           <ul
             tabIndex={0}
-            className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+            className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-200 rounded-box w-auto font-semibold"
           >
             <li>
-              <Link href="/" className="hover:bg-primary hover:text-black">
+              <a href="/" className="hover:bg-primary hover:text-black">
                 Homepage
-              </Link>
+              </a>
             </li>
             <li>
               <Link href="/files" className="hover:bg-primary hover:text-black">
@@ -56,16 +60,7 @@ export default function Navbar() {
         </Link>
       </div>
       <div className="navbar-end">
-        <UserMenu
-          user={{
-            authProvider: "",
-            email: "",
-            image: "",
-            name: "",
-            password: "",
-            googleId: "",
-          }}
-        />
+        <UserMenu user={session?.user as unknown as User} />
       </div>
     </div>
   );

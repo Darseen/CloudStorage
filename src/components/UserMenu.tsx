@@ -3,9 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
+import { User } from "next-auth";
 
 interface UserMenuProps {
-  user: User;
+  user: User | null;
 }
 
 export default function UserMenu({ user }: UserMenuProps) {
@@ -14,7 +15,12 @@ export default function UserMenu({ user }: UserMenuProps) {
       <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
         <div className="w-10 rounded-full">
           {user?.image ? (
-            <Image src={user?.image} alt="" />
+            <Image
+              src={user?.image}
+              alt="User image"
+              width={200}
+              height={200}
+            />
           ) : (
             <svg
               viewBox="0 0 24 24"
@@ -54,29 +60,50 @@ export default function UserMenu({ user }: UserMenuProps) {
           )}
         </div>
       </label>
-      <ul
-        tabIndex={0}
-        className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
-      >
-        <li>
-          <Link href="/profile" className="hover:bg-primary hover:text-black">
-            Profile
-          </Link>
-        </li>
-        <li>
-          <Link href="/settings" className="hover:bg-primary hover:text-black">
-            Settings
-          </Link>
-        </li>
-        <li>
-          <button
-            className="hover:bg-primary hover:text-black"
-            onClick={(e) => signOut({ callbackUrl: "/" })}
-          >
-            Logout
-          </button>
-        </li>
-      </ul>
+      {user ? (
+        <ul
+          tabIndex={0}
+          className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-200 rounded-box w-auto font-semibold"
+        >
+          <li>
+            <Link href="/profile" className="hover:bg-primary hover:text-black">
+              Profile
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/settings"
+              className="hover:bg-primary hover:text-black"
+            >
+              Settings
+            </Link>
+          </li>
+          <li>
+            <button
+              className="hover:bg-primary hover:text-black"
+              onClick={(e) => signOut({ callbackUrl: "/" })}
+            >
+              Logout
+            </button>
+          </li>
+        </ul>
+      ) : (
+        <ul
+          tabIndex={0}
+          className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-200 rounded-box w-auto font-semibold"
+        >
+          <li>
+            <Link href="/signin" className="hover:bg-primary hover:text-black">
+              Sign in
+            </Link>
+          </li>
+          <li>
+            <Link href="/signup" className="hover:bg-primary hover:text-black">
+              Sign up
+            </Link>
+          </li>
+        </ul>
+      )}
     </div>
   );
 }
