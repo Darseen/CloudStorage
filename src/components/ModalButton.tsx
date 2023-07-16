@@ -8,11 +8,12 @@ interface ModalButtonProps {
   user: User;
 }
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 export default function ModalButton({ user }: ModalButtonProps) {
   const modalRef = useRef<HTMLDialogElement>(null);
   const router = useRouter();
+  const [isMobile, setIsMobile] = useState(false);
 
   const showModal = () => {
     if (modalRef.current) {
@@ -20,11 +21,27 @@ export default function ModalButton({ user }: ModalButtonProps) {
     }
   };
 
+  const handleTouchStart = () => {
+    setIsMobile(true);
+  };
+
+  const handleClick = () => {
+    if (isMobile && !user) {
+      setIsMobile(false);
+      showModal();
+    } else if (!user) {
+      showModal();
+    } else {
+      router.push("/files");
+    }
+  };
+
   return (
     <>
       <button
         className="bg-primary rounded-xl text-white font-bold px-4 py-3 sm:mt-10 mt-8 hover:bg-black transition"
-        onClick={user ? () => router.push("/files") : showModal}
+        onTouchStart={handleTouchStart}
+        onClick={handleClick}
       >
         Files Dashboard
       </button>
