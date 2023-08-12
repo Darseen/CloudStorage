@@ -26,7 +26,6 @@ export default function Page() {
         ...credentials,
         redirect: false,
       });
-      console.log(res);
       if (res && !res.error) {
         router.push("/");
       }

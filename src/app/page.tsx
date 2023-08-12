@@ -1,7 +1,6 @@
 import { User, getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
 import { authOptions } from "./api/auth/[...nextauth]/route";
-import ModalButton from "@/components/ModalButton";
+import AuthModal from "@/components/AuthModal";
 
 export default async function Page() {
   const session = await getServerSession(authOptions);
@@ -13,10 +12,11 @@ export default async function Page() {
           App For Free Online File Storing.
         </h1>
         <h2 className="mx-auto mt-12 max-w-xl text-lg sm:text-gray-400  text-gray-500 leading-7">
-          This app was built using Next.js, Mongodb, Prisma and TailwindCSS
+          This app was built using Next.js, Mongodb and Prisma. Styled with
+          DaisyUI and TailwindCSS
         </h2>
 
-        <ModalButton user={session?.user as unknown as User} />
+        <AuthModal user={session?.user as unknown as User} />
 
         <a
           href="https://github.com/darseen/CloudStorage"

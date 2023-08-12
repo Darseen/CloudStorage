@@ -33,7 +33,6 @@ export default function Page() {
 
       const data = await res.json();
 
-      console.log(data);
       if (data && !data.err) {
         router.push("/");
       }

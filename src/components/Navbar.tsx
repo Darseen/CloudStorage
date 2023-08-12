@@ -7,7 +7,7 @@ export default async function Navbar() {
   const session = await getServerSession(authOptions);
 
   return (
-    <div className="navbar bg-transparent fixed">
+    <div className="navbar bg-transparent fixed z-10 backdrop-filter backdrop-blur-sm border-b border-slate-300/10">
       <div className="navbar-start">
         <div className="dropdown">
           <label
@@ -37,11 +37,6 @@ export default async function Navbar() {
               <a href="/" className="hover:bg-primary hover:text-black">
                 Homepage
               </a>
-            </li>
-            <li>
-              <Link href="/files" className="hover:bg-primary hover:text-black">
-                Files
-              </Link>
             </li>
             <li>
               <Link href="/about" className="hover:bg-primary hover:text-black">
